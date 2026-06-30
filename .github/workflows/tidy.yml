@@ -17,9 +17,8 @@ jobs:
       - name: Fetch latest release tag from external repository
         id: fetch-release
         run: |
-          # Mengubah target ke repositori core milik Anda
           EXTERNAL_REPO="unarto/Xraycorev26.1.3"
-          LATEST_TAG=$(curl -s https://api.github.com/repos/$EXTERNAL_REPO/tags | jq -r '.[0]')
+          LATEST_TAG=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/$EXTERNAL_REPO/tags | jq -r '.[0]')
           LATEST_TAG_NAME=$(echo $LATEST_TAG | jq -r .name)
           LATEST_TAG_SHA=$(echo $LATEST_TAG | jq -r .commit.sha)
           echo "Latest tag from external repo: $LATEST_TAG_NAME"
@@ -57,10 +56,11 @@ jobs:
 
       - name: Update and commit changes
         if: env.needs_update == 'true'
+        env:
+          GOPRIVATE: github.com/unarto/*
         run: |
-          # Sync Go version dari upstream go.mod milik core Anda
           EXTERNAL_REPO="unarto/Xraycorev26.1.3"
-          GO_VERSION=$(curl -s https://raw.githubusercontent.com/$EXTERNAL_REPO/${{ env.LATEST_TAG_NAME }}/go.mod | awk '/^go / {print $2; exit}')
+          GO_VERSION=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://raw.githubusercontent.com/$EXTERNAL_REPO/${{ env.LATEST_TAG_NAME }}/go.mod | awk '/^go / {print $2; exit}')
           if [ -n "$GO_VERSION" ]; then
             echo "Syncing Go version to $GO_VERSION"
             go mod edit -go=$GO_VERSION
@@ -68,14 +68,14 @@ jobs:
             echo "Failed to detect Go version from upstream go.mod"
           fi
 
-          # Mengubah package target go get ke core Anda
-          go get github.com/unarto/Xraycorev26.1.3@${{ env.LATEST_TAG_SHA }}
-          go get golang.org/x/mobile@latest
+          # Mengubah target replace secara dinamis ke SHA commit terbaru dari core Anda
+          go mod edit -replace github.com/xtls/xray-core=github.com/unarto/Xraycorev26.1.3@${{ env.LATEST_TAG_SHA }}
           
-          # Bersihkan dan verifikasi dependensi modul
+          # Update library mobile dan merapikan dependensi
+          go get golang.org/x/mobile@latest
           go mod tidy -v
           
-          # Tampilkan perubahan
+          # Menampilkan perubahan di log
           git diff
 
       - name: Commit and push changes
