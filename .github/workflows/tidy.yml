@@ -64,26 +64,27 @@ jobs:
           if [ -n "$GO_VERSION" ]; then
             echo "Syncing Go version to $GO_VERSION"
             go mod edit -go=$GO_VERSION
-          else
-            echo "Failed to detect Go version from upstream go.mod"
           fi
 
-          # Mengubah target replace secara dinamis ke SHA commit terbaru dari core Anda
+          # Mengarahkan xray-core ke repo pribadi Anda
           go mod edit -replace github.com/xtls/xray-core=github.com/unarto/Xraycorev26.1.3@${{ env.LATEST_TAG_SHA }}
           
-          # Update library mobile dan merapikan dependensi
+          # Sinkronisasi awal dependensi
           go get golang.org/x/mobile@latest
           go mod tidy -v
           
-          # Menampilkan perubahan di log
-          git diff
+          # MODE BERBURU: Ambil semua source code eksternal dan kunci di dalam folder lokal 'vendor'
+          go mod vendor
+          
+          # Menampilkan perubahan (Anda akan melihat ribuan baris kode baru masuk ke folder vendor/)
+          git diff --stat
 
       - name: Commit and push changes
         id: auto-commit-action
         if: env.needs_update == 'true'
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: Updating xray-core to ${{ env.LATEST_TAG_NAME }} ${{ env.LATEST_TAG_SHA }}
+          commit_message: Updating xray-core to ${{ env.LATEST_TAG_NAME }} and freezing all dependencies via vendor
           tagging_message: ${{ env.LATEST_TAG_NAME }}
 
       - name: Trigger build
