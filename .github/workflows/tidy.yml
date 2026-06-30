@@ -17,7 +17,8 @@ jobs:
       - name: Fetch latest release tag from external repository
         id: fetch-release
         run: |
-          EXTERNAL_REPO="XTLS/Xray-core"
+          # Mengubah target ke repositori core milik Anda
+          EXTERNAL_REPO="unarto/Xraycorev26.1.3"
           LATEST_TAG=$(curl -s https://api.github.com/repos/$EXTERNAL_REPO/tags | jq -r '.[0]')
           LATEST_TAG_NAME=$(echo $LATEST_TAG | jq -r .name)
           LATEST_TAG_SHA=$(echo $LATEST_TAG | jq -r .commit.sha)
@@ -28,7 +29,7 @@ jobs:
       - name: Fetch current repository release tag
         id: fetch-current-tag
         run: |
-          CURRENT_TAG_NAME=$(git describe --tags --abbrev=0)
+          CURRENT_TAG_NAME=$(git describe --tags --abbrev=0 || echo "v0.0.0")
           echo "Current tag in this repo: $CURRENT_TAG_NAME"
           echo "CURRENT_TAG_NAME=$CURRENT_TAG_NAME" >> $GITHUB_ENV
 
@@ -38,6 +39,7 @@ jobs:
           if [ "$LATEST_TAG_NAME" != "$CURRENT_TAG_NAME" ]; then
               if [ "$(printf '%s\n' "$LATEST_TAG_NAME" "$CURRENT_TAG_NAME" | sort -V | tail -n1)" == "$CURRENT_TAG_NAME" ]; then 
                 echo "Upstream LATEST_TAG_NAME less than the CURRENT_TAG_NAME, no update needed."
+                echo "needs_update=false" >> $GITHUB_ENV
               else
                 echo "Tags are different. Updating..."
                 echo "needs_update=true" >> $GITHUB_ENV
@@ -49,15 +51,15 @@ jobs:
 
       - name: Setup Golang
         if: env.needs_update == 'true'
-        uses: actions/setup-go@v5.4.0
+        uses: actions/setup-go@v5
         with:
           go-version: 'stable'
 
       - name: Update and commit changes
         if: env.needs_update == 'true'
         run: |
-          # Sync Go version from upstream go.mod
-          EXTERNAL_REPO="XTLS/Xray-core"
+          # Sync Go version dari upstream go.mod milik core Anda
+          EXTERNAL_REPO="unarto/Xraycorev26.1.3"
           GO_VERSION=$(curl -s https://raw.githubusercontent.com/$EXTERNAL_REPO/${{ env.LATEST_TAG_NAME }}/go.mod | awk '/^go / {print $2; exit}')
           if [ -n "$GO_VERSION" ]; then
             echo "Syncing Go version to $GO_VERSION"
@@ -66,19 +68,20 @@ jobs:
             echo "Failed to detect Go version from upstream go.mod"
           fi
 
-          go get github.com/xtls/xray-core@${{ env.LATEST_TAG_SHA }}
+          # Mengubah package target go get ke core Anda
+          go get github.com/unarto/Xraycorev26.1.3@${{ env.LATEST_TAG_SHA }}
           go get golang.org/x/mobile@latest
           
-          # Clean up and verify module dependencies
+          # Bersihkan dan verifikasi dependensi modul
           go mod tidy -v
           
-          # Show changes
+          # Tampilkan perubahan
           git diff
 
       - name: Commit and push changes
         id: auto-commit-action
         if: env.needs_update == 'true'
-        uses: stefanzweifel/git-auto-commit-action@v5.1.0
+        uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: Updating xray-core to ${{ env.LATEST_TAG_NAME }} ${{ env.LATEST_TAG_SHA }}
           tagging_message: ${{ env.LATEST_TAG_NAME }}
