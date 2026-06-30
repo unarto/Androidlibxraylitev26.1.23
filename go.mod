@@ -3,7 +3,7 @@ module github.com/unarto/Androidlibxraylitev26.1.23
 go 1.25.6
 
 require (
-	github.com/xtls/xray-core v1.260123.0
+	github.com/unarto/Xraycorev26.1.3 v0.0.0-20260630064345-b151e2aa7ad5
 	golang.org/x/mobile v0.0.0-20260120165949-40bd9ace6ce4
 )
 
@@ -54,4 +54,4 @@ require (
 )
 
 // Menghubungkan dependensi XTLS resmi ke repositori core kustom Anda
-replace github.com/xtls/xray-core => github.com/unarto/Xraycorev26.1.3 v1.260123.0
+replace github.com/xtls/xray-core => github.com/unarto/Xraycorev26.1.3 v0.0.0-20260630064345-b151e2aa7ad5
