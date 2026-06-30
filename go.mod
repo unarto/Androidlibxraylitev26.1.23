@@ -1,4 +1,4 @@
-module github.com/2dust/AndroidLibXrayLite
+module github.com/unarto/Androidlibxraylitev26.1.23
 
 go 1.25.6
 
@@ -52,3 +52,6 @@ require (
 	gvisor.dev/gvisor v0.0.0-20260109181451-4be7c433dae2 // indirect
 	lukechampine.com/blake3 v1.4.1 // indirect
 )
+
+// Menghubungkan dependensi XTLS resmi ke repositori core kustom Anda
+replace github.com/xtls/xray-core => github.com/unarto/Xraycorev26.1.3 v1.260123.0
