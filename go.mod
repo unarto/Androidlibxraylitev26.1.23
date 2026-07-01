@@ -4,7 +4,7 @@ go 1.25.6
 
 require (
 	github.com/unarto/Xraycorev26.1.3 v0.0.0-20260630064345-b151e2aa7ad5
-	golang.org/x/mobile v0.0.0-20260120165949-40bd9ace6ce4
+	golang.org/x/mobile v0.0.0-20260611195102-4dd8f1dbf5d2
 )
 
 require (
@@ -34,15 +34,15 @@ require (
 	github.com/xtls/reality v0.0.0-20251116175510-cd53f7d50237 // indirect
 	go.uber.org/mock v0.6.0 // indirect
 	go4.org/netipx v0.0.0-20231129151722-fdeea329fbba // indirect
-	golang.org/x/crypto v0.47.0 // indirect
+	golang.org/x/crypto v0.53.0 // indirect
 	golang.org/x/exp v0.0.0-20240506185415-9bf2ced13842 // indirect
-	golang.org/x/mod v0.32.0 // indirect
-	golang.org/x/net v0.49.0 // indirect
-	golang.org/x/sync v0.19.0 // indirect
-	golang.org/x/sys v0.40.0 // indirect
-	golang.org/x/text v0.33.0 // indirect
+	golang.org/x/mod v0.37.0 // indirect
+	golang.org/x/net v0.56.0 // indirect
+	golang.org/x/sync v0.21.0 // indirect
+	golang.org/x/sys v0.46.0 // indirect
+	golang.org/x/text v0.38.0 // indirect
 	golang.org/x/time v0.14.0 // indirect
-	golang.org/x/tools v0.41.0 // indirect
+	golang.org/x/tools v0.46.0 // indirect
 	golang.zx2c4.com/wintun v0.0.0-20230126152724-0fa3db229ce2 // indirect
 	golang.zx2c4.com/wireguard v0.0.0-20250521234502-f333402bd9cb // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20251202230838-ff82c1b0f217 // indirect
@@ -54,4 +54,4 @@ require (
 )
 
 // Menghubungkan dependensi XTLS resmi ke repositori core kustom Anda
-replace github.com/xtls/xray-core => github.com/unarto/Xraycorev26.1.3 v0.0.0-20260630064345-b151e2aa7ad5
+replace github.com/xtls/xray-core => github.com/unarto/Xraycorev26.1.3 v0.0.0-20260614181527-f196196a6a6f
